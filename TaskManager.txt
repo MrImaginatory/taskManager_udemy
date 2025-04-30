@@ -1,0 +1,6 @@
+TaskManager First App:
+	-Simple input without login
+	-data to be taken is: taskName, status(complete,Pending)
+	-after that save and display the tasks
+	-edit task button and delete task button
+	-edit task form on different page
