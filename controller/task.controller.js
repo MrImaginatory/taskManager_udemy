@@ -2,13 +2,13 @@ import Task from '../model/task.model.js'
 import asyncHandler from "../utils/asyncHandler.util.js"
 
 const createTaskController = asyncHandler(async (req, res) => {
-    const { task } = req.body;
+    const { taskName } = req.body;
 
-    if (!task || typeof task !== 'string' || !task.trim()) {
+    if (!taskName || typeof taskName !== 'string' || !taskName.trim()) {
         return res.status(400).json({ message: "Task cannot be empty" });
     }
 
-    const newTask = new Task({ taskName: task.trim() });
+    const newTask = new Task({ taskName: taskName.trim() });
 
     try {
         const taskResp = await newTask.save();
@@ -44,4 +44,28 @@ const deleteTaskController = asyncHandler(async(req,res)=>{
     return res.status(200).json({message:"Task Deleted Successfully"});
 })
 
-export {createTaskController,getTaskController,deleteTaskController};
+const updateTaskController = asyncHandler(async(req, res) =>{
+    const taskId  = req.params.id;
+    const {taskName, status} = req.body;
+
+    const taskExists = await Task.findById(taskId);
+
+    if(!taskExists){
+        return res.status(404).json({message:"Task does not exits!"});
+    }
+
+    const updateTask = {
+        taskName:taskName,
+        status:status
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(taskId,updateTask,{new:true});
+
+    if(!updateTask){
+        return res.status(401).json({message:"Error updating task!"});
+    }
+
+    return res.status(200).json("Task Updated Successfully");
+})
+
+export {createTaskController,getTaskController,deleteTaskController, updateTaskController};
