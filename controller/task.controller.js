@@ -4,19 +4,19 @@ import asyncHandler from "../utils/asyncHandler.util.js"
 const createTaskController = asyncHandler(async (req, res) => {
     const { taskName } = req.body;
 
-    if (!taskName || typeof taskName !== 'string' || !taskName.trim()) {
-        return res.status(400).json({ message: "Task cannot be empty" });
+    if (typeof taskName !== 'string' || !taskName.trim()) {
+        return res.status(400).json({ message: "Task name cannot be empty" });
     }
 
-    const newTask = new Task({ taskName: taskName.trim() });
-
     try {
-        const taskResp = await newTask.save();
+        const task = new Task({ taskName: taskName.trim() });
+        const savedTask = await task.save();
+
         return res.status(201).json({
             message: "New task created successfully",
             task: {
-                id: taskResp._id,
-                taskName: taskResp.taskName
+                id: savedTask._id,
+                taskName: savedTask.taskName
             }
         });
     } catch (error) {
@@ -24,48 +24,54 @@ const createTaskController = asyncHandler(async (req, res) => {
     }
 });
 
-const getTaskController = asyncHandler(async(req, res) => {
-    const Tasks = await Task.find();
-    if(!Tasks){
-        return res.status(404).json({message:"No Task Found! Please Add a new Task"});
-    }
-    
-    return res.status(200).json({message:"Task Found",Tasks});
-})
 
-const deleteTaskController = asyncHandler(async(req,res)=>{
-    const taskId = req.params.id;
-    const deleteTask = await Task.findByIdAndDelete(taskId);
+const getTaskController = asyncHandler(async (req, res) => {
+    const tasks = await Task.find();
 
-    if(!deleteTask){
-        return res.status(404).json({message:"This task does not exits"});
+    if (tasks.length === 0) {
+        return res.status(404).json({ message: "No tasks found. Please add a new task." });
     }
 
-    return res.status(200).json({message:"Task Deleted Successfully"});
-})
+    return res.status(200).json({ message: "Tasks retrieved successfully", tasks });
+});
 
-const updateTaskController = asyncHandler(async(req, res) =>{
-    const taskId  = req.params.id;
-    const {taskName, status} = req.body;
 
-    const taskExists = await Task.findById(taskId);
+const deleteTaskController = asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-    if(!taskExists){
-        return res.status(404).json({message:"Task does not exits!"});
+    const deletedTask = await Task.findByIdAndDelete(id);
+
+    if (!deletedTask) {
+        return res.status(404).json({ message: "Task not found" });
     }
 
-    const updateTask = {
-        taskName:taskName,
-        status:status
+    return res.status(200).json({ message: "Task deleted successfully" });
+});
+
+
+const updateTaskController = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { taskName, status } = req.body;
+
+    const updatedTask = await Task.findByIdAndUpdate(
+        id,
+        { taskName, status },
+        { new: true, runValidators: true }
+    );
+
+    if (!updatedTask) {
+        return res.status(404).json({ message: "Task not found" });
     }
 
-    const updatedTask = await Task.findByIdAndUpdate(taskId,updateTask,{new:true});
+    return res.status(200).json({
+        message: "Task updated successfully",
+        task: {
+            id: updatedTask._id,
+            taskName: updatedTask.taskName,
+            status: updatedTask.status
+        }
+    });
+});
 
-    if(!updateTask){
-        return res.status(401).json({message:"Error updating task!"});
-    }
-
-    return res.status(200).json("Task Updated Successfully");
-})
 
 export {createTaskController,getTaskController,deleteTaskController, updateTaskController};
