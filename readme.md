@@ -176,7 +176,7 @@ Each task has the following structure:
 
 ## 📬 Contact
 
-For questions or suggestions, open an issue or reach out via [GitHub Issues](https://github.com/your-username/TaskManager/issues).
+For questions or suggestions, open an issue or reach out via [GitHub Issues](https://github.com/mrimaginatory/TaskManager/issues).
 
 ---
 
