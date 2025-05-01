@@ -24,7 +24,6 @@ const createTaskController = asyncHandler(async (req, res) => {
     }
 });
 
-
 const getTaskController = asyncHandler(async (req, res) => {
     const tasks = await Task.find();
 
@@ -35,6 +34,17 @@ const getTaskController = asyncHandler(async (req, res) => {
     return res.status(200).json({ message: "Tasks retrieved successfully", tasks });
 });
 
+const getTaskByIdController = asyncHandler(async(req,res)=>{
+    const taskId = req.params.id;
+
+    const taskExists = await Task.findById(taskId);
+
+    if(!taskExists){
+        return res.status(404).json({message:"Task not Found!"});
+    }
+
+    return res.status(200).json({message:"Task Found",taskExists});
+})
 
 const deleteTaskController = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -47,7 +57,6 @@ const deleteTaskController = asyncHandler(async (req, res) => {
 
     return res.status(200).json({ message: "Task deleted successfully" });
 });
-
 
 const updateTaskController = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -73,5 +82,4 @@ const updateTaskController = asyncHandler(async (req, res) => {
     });
 });
 
-
-export {createTaskController,getTaskController,deleteTaskController, updateTaskController};
+export {createTaskController, getTaskController, getTaskByIdController, deleteTaskController, updateTaskController};
