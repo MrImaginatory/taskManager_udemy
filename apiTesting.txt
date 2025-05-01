@@ -1,0 +1,15 @@
+get all task:
+    METHOD:GET
+    -http://localhost:3001/task/getTask
+
+Delete all task:
+    METHOD:DELETE
+    -http://localhost:3001/task/deleteTask/:id
+
+Update all task:
+    METHOD:PUT
+    -http://localhost:3001/task/updateTask/:id
+
+Create all task:
+    METHOD:POST
+    -http://localhost:3001/task/addTask
