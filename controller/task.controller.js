@@ -62,6 +62,10 @@ const updateTaskController = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { taskName, status } = req.body;
 
+    if(!taskName|| taskName.length<=0){
+        return res.status(401).json({message:"Please Provide Task Name"});
+    }
+
     const updatedTask = await Task.findByIdAndUpdate(
         id,
         { taskName, status },
